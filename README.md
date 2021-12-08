@@ -60,13 +60,17 @@ Please use the following script to deploy kubeflow/training-operator (**master b
 kubectl apply -k "github.com/kubeflow/training-operator/manifests/overlays/standalone"
 ```
 
-### Prepare training script
+### Elastic training with PriorityClass
+
+We introduce how to train with Kubeflow MPIJob with PriorityClass in this section.
+
+#### Prepare training script
 
 To prepare an elastic training task with `Horovod`, please refer this [tutorial](https://horovod.readthedocs.io/en/stable/elastic_include.html#elastic-tensorflow).
 
 For the sake of converge, user might need to wrapper the `lr_scheduler` to scaling the learning rate proportionally to the contemporary worker counts.
 
-### (Optional) Define PriorityClass
+#### (Optional) Define PriorityClass
 
 User may assign PriorityClass to Pods. Generally, we assign Pods from workloads for online service with **High** Priority, Pods from training jobs that should be kept under high resource stress with **Medium** Priority, Pods from training jobs that could be evicted with **Low** Priority.
 
@@ -99,7 +103,7 @@ preemptionPolicy: Never
 value: 80000001
 ```
 
-### Launch & Go!
+#### Launch & Go!
 
 Here is an example of elastic training job with Horovod Elastic:
 
@@ -158,3 +162,71 @@ spec:
 ```
 
 As long as Pods for workload with high Priority are assigned with proper PriorityClass, the default scheduler is able to evict worker Pods and make room for other pending Pods. Here is a [demo](./demo.cast).
+
+### Elastic training with HorizontalPodAutoscaler
+
+Training with HorizontalPodAutoscaler is also supported. In this section, we present an example with Kubeflow PyTorchJob.
+
+#### Prepare training script
+
+PyTorch 1.10 supports elastic training. Users should manage the checkpoints as below. Please refer to [PyTorch Elastic documentation](https://pytorch.org/docs/stable/distributed.elastic.html) for details.
+
+```python
+def main():
+     args = parse_args(sys.argv[1:])
+     state = load_checkpoint(args.checkpoint_path)
+     initialize(state)
+
+     # torch.distributed.run ensures that this will work
+     # by exporting all the env vars needed to initialize the process group
+     torch.distributed.init_process_group(backend=args.backend)
+
+     for i in range(state.epoch, state.total_num_epochs)
+          for batch in iter(state.dataset)
+              train(batch, state.model)
+
+          state.epoch += 1
+          save_checkpoint(state)
+```
+
+#### Run PyTorchJob with ElasticPolicy
+
+Elastic training with PyTorchJob is now supported in master branch of [Kubeflow training operator](https://github.com/kubeflow/training-operator). The example above can be used to deploy an elastic PyTorchJob.
+
+```yaml
+apiVersion: "kubeflow.org/v1"
+kind: PyTorchJob
+metadata:
+  name: elastic-example-imagenet
+spec:
+  elasticPolicy:
+    rdzvBackend: c10d
+    minReplicas: 1
+    maxReplicas: 2
+    maxRestarts: 100
+  pytorchReplicaSpecs:
+    Worker:
+      replicas: 2
+      restartPolicy: OnFailure
+      template:
+        spec:
+          containers:
+            - name: pytorch
+              image: kubeflow/pytorch-elastic-example-imagenet:1.0.0-sigterm
+              imagePullPolicy: IfNotPresent
+              env:
+              - name: LOGLEVEL
+                value: DEBUG
+              command:
+                - python
+                - -m
+                - torch.distributed.run
+                - /workspace/examples/imagenet.py
+                - "--arch=resnet18"
+                - "--epochs=20"
+                - "--batch-size=32"
+                - "--workers=0"
+                - "/workspace/data/tiny-imagenet-200"
+```
+
+Please have a look at the demo video [here](https://asciinema.org/a/446932).
