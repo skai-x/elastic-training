@@ -62,7 +62,7 @@ kubectl apply -k "github.com/kubeflow/training-operator/manifests/overlays/stand
 
 ### Elastic training with PriorityClass
 
-We introduce how to train with Kubeflow MPIJob and PriorityClass in this section.
+We introduce how to train with Kubeflow MPIJob with PriorityClass in this section.
 
 #### Prepare training script
 
