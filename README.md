@@ -165,7 +165,7 @@ As long as Pods for workload with high Priority are assigned with proper Priorit
 
 ### Elastic training with HorizontalPodAutoscaler
 
-Training with HorizontalPodAutoscaler is also supported.
+Training with HorizontalPodAutoscaler is also supported. In this section, we present an example with Kubeflow PyTorchJob.
 
 #### Prepare training script
 
