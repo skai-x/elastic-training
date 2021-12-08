@@ -191,7 +191,7 @@ def main():
 
 #### Run PyTorchJob with ElasticPolicy
 
-Elastic training is supported in [Kubeflow training operator](https://github.com/kubeflow/training-operator). The example above can be used to deploy a elastic PyTorchJob.
+Elastic training with PyTorchJob is now supported in master branch of [Kubeflow training operator](https://github.com/kubeflow/training-operator). The example above can be used to deploy an elastic PyTorchJob.
 
 ```yaml
 apiVersion: "kubeflow.org/v1"
