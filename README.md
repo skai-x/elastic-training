@@ -46,9 +46,9 @@ We recommend a Kubernetes version of 1.18+.
 
 | API       | API Version | Support Elastic Training |
 | --------- | ----------- | ------------------------ |
-| TFJob     | `v1`        | Yes (worker only*)        |
+| TFJob     | `v1`        | Yes (worker only*)       |
 | MPIJob    | `v1`        | Yes                      |
-| PyTorchJob| `v1`        | In Progress              |
+| PyTorchJob| `v1`        | Yes                      |
 | MXNetJob  | `v1`        | No                       |
 | XGBoostJob| `v1`        | No                       |
 
