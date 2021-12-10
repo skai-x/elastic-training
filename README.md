@@ -161,7 +161,7 @@ spec:
                 memory: 4Gi
 ```
 
-As long as Pods for workload with high Priority are assigned with proper PriorityClass, the default scheduler is able to evict worker Pods and make room for other pending Pods. Here is a [demo](./demo.cast).
+As long as Pods for workload with high Priority are assigned with proper PriorityClass, the default scheduler is able to evict worker Pods and make room for other pending Pods. Here is a [demo](./demos/demo-mpi.cast).
 
 ### Elastic training with HorizontalPodAutoscaler
 
