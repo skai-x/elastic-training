@@ -4,7 +4,7 @@ Elastic Training on Kubernetes
 *This repository holds end-to-end documents on how to start elastic training on Kubernetes clusters.*
 
 
-It is a concept of elastic training is familiar to you, please jump to the section of [how to use Elastic Training](#how-to-use-elastic-training?).
+It is a concept of elastic training is familiar to you, please jump to the section of [how to use Elastic Training](#how-to-use-elastic-training).
 
 ## What is Elastic Training?
 
